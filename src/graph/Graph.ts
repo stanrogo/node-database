@@ -4,16 +4,20 @@ class Graph{
     E : number = 0; // The number of edges
     adj : number[][][] = [];
     reverse_adj : number[][][] = [];
-    edgeCounts : number[] = [];
+    edgeCounts : Uint32Array;
 
     constructor(n : number = 1){
         this.setDataStructureSizes(n);
     }
 
+    /**
+     * Initialise sizes of all datastructures used
+     * @param n The number of labels in the graph
+     */
     setDataStructureSizes(n : number){
         this.adj = [...Array(n)].map(x => []);
         this.reverse_adj = [...Array(n)].map(x => []);
-        this.edgeCounts = [...Array(n)].map(x => 0);
+        this.edgeCounts = new Uint32Array(n);
     }
 
     /**
