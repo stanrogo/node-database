@@ -29,11 +29,9 @@ class SingleGraph{
 
         if(!targetArr){
             targetArr = new Uint32Array(1);
-            targetArr[0] = to;
         } else {
             const newArr : Uint32Array = new Uint32Array(targetArr.length + 1);
             newArr.set(targetArr);
-            targetArr = newArr;
         }
 
         if(!sourceArr){

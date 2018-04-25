@@ -33,7 +33,6 @@ class Graph{
 
         if(!targetArr){
             targetArr = new Uint32Array(1);
-            targetArr[0] = to;
         } else {
             const newArr : Uint32Array = new Uint32Array(targetArr.length + 1);
             newArr.set(targetArr);
@@ -42,7 +41,6 @@ class Graph{
 
         if(!sourceArr){
             sourceArr = new Uint32Array(1);
-            sourceArr[0] = to;
         } else {
             const newArr : Uint32Array = new Uint32Array(sourceArr.length + 1);
             newArr.set(sourceArr);

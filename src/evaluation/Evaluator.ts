@@ -43,7 +43,8 @@ class Evaluator{
         const outGraph : SingleGraph = new SingleGraph();
         left.adj.forEach((leftTargets, leftSource) => {
             leftTargets.forEach((leftTarget) => {
-                const rightTargets = right.adj.get(leftTarget) || [];
+                const rightTargets = right.adj.get(leftTarget);
+                if(!rightTargets) return;
                 rightTargets.forEach((rightTarget) => {
                     outGraph.addEdge(leftSource, rightTarget);
                 });
