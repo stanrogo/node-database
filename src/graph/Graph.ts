@@ -2,8 +2,8 @@ import readLines from '../FileReader';
 
 class Graph{
     E : number = 0; // The number of edges
-    adj : Array<Map<number, number[]>>;
-    reverse_adj : Array<Map<number, number[]>>;
+    adj : Array<Map<number, Uint32Array>>;
+    reverse_adj : Array<Map<number, Uint32Array>>;
     edgeCounts : Uint32Array;
 
     constructor(n : number = 1){
@@ -28,16 +28,31 @@ class Graph{
      */
     addEdge(from: number, to: number, edgeLabel: number) : void {
 
-        let targetArr : number[] = this.adj[edgeLabel].get(from);
-        let sourceArr : number[] = this.reverse_adj[edgeLabel].get(to);
+        let targetArr : Uint32Array = this.adj[edgeLabel].get(from);
+        let sourceArr : Uint32Array = this.reverse_adj[edgeLabel].get(to);
 
-        if(!targetArr) targetArr = [];
-        if(!sourceArr) sourceArr = [];
+        if(!targetArr){
+            targetArr = new Uint32Array(1);
+            targetArr[0] = to;
+        } else {
+            const newArr : Uint32Array = new Uint32Array(targetArr.length + 1);
+            newArr.set(targetArr);
+            targetArr = newArr;
+        }
+
+        if(!sourceArr){
+            sourceArr = new Uint32Array(1);
+            sourceArr[0] = to;
+        } else {
+            const newArr : Uint32Array = new Uint32Array(sourceArr.length + 1);
+            newArr.set(sourceArr);
+            sourceArr = newArr;
+        }
 
         if(targetArr.includes(to)) return;
 
-        targetArr.push(to);
-        sourceArr.push(from);
+        targetArr[targetArr.length - 1] = to;
+        sourceArr[sourceArr.length - 1] = from;
         this.adj[edgeLabel].set(from, targetArr);
         this.reverse_adj[edgeLabel].set(to, sourceArr);
         this.E++;

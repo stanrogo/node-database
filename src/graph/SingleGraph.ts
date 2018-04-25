@@ -9,8 +9,8 @@ import Graph from './Graph';
 
 class SingleGraph{
     E : number = 0;                         // Number of edges
-    adj : Map<number, number[]>;            // Adjacency Matrix
-    reverse_adj : Map<number, number[]>;    // Reverse Adjacency Matrix
+    adj : Map<number, Uint32Array>;            // Adjacency Matrix
+    reverse_adj : Map<number, Uint32Array>;    // Reverse Adjacency Matrix
 
     constructor() {
         this.adj = new Map();
@@ -24,18 +24,33 @@ class SingleGraph{
      */
     addEdge(from: number, to: number) : void {
         // Initialise position in array to empty, if it doesn't exist yet
-        let targetArr : number[] = this.adj.get(from);
-        let sourceArr : number[] = this.reverse_adj.get(to);
+        let targetArr : Uint32Array = this.adj.get(from);
+        let sourceArr : Uint32Array = this.reverse_adj.get(to);
 
-        if(!targetArr) targetArr = [];
-        if(!sourceArr) sourceArr = [];
+        if(!targetArr){
+            targetArr = new Uint32Array(1);
+            targetArr[0] = to;
+        } else {
+            const newArr : Uint32Array = new Uint32Array(targetArr.length + 1);
+            newArr.set(targetArr);
+            targetArr = newArr;
+        }
+
+        if(!sourceArr){
+            sourceArr = new Uint32Array(1);
+            sourceArr[0] = to;
+        } else {
+            const newArr : Uint32Array = new Uint32Array(sourceArr.length + 1);
+            newArr.set(sourceArr);
+            sourceArr = newArr;
+        }
 
         // Check for uniqueness
         if(targetArr.includes(to)) return;
 
         // Add the elements
-        targetArr.push(to);
-        sourceArr.push(from);
+        targetArr[targetArr.length - 1] = to;
+        sourceArr[sourceArr.length - 1] = from;
         this.adj.set(from, targetArr);
         this.reverse_adj.set(to, sourceArr);
         this.E++;

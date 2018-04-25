@@ -7,8 +7,8 @@
 
 import Bench from './benchmark/Bench';
 
-const graphFile : string = './input/graph_local.nt';
-const queriesFile : string = './input/queries_local.csv';
+const graphFile : string = './input/graph_synthetic.nt';
+const queriesFile : string = './input/queries_synthetic.csv';
 
 const benchmark : Bench = new Bench(graphFile, queriesFile);
 benchmark.benchmark();
