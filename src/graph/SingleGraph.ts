@@ -8,27 +8,36 @@
 import Graph from './Graph';
 
 class SingleGraph{
-    E : number = 0;                    // Number of edges
-    adj : number[][] = [];             // Adjacency Matrix
-    reverse_adj : number[][] = [];     // Reverse Adjacency Matrix
+    E : number = 0;                         // Number of edges
+    adj : Map<number, number[]>;            // Adjacency Matrix
+    reverse_adj : Map<number, number[]>;    // Reverse Adjacency Matrix
+
+    constructor() {
+        this.adj = new Map();
+        this.reverse_adj = new Map();
+    }
 
     /**
      * Add an edge to the graph - source is array index with array of targets
      * @param from
      * @param to
-     * @param edgeLabel
      */
-    addEdge(from: number, to: number, edgeLabel: number) : void {
+    addEdge(from: number, to: number) : void {
         // Initialise position in array to empty, if it doesn't exist yet
-        if(!this.adj[from]) this.adj[from] = [];
-        if(!this.reverse_adj[to]) this.reverse_adj[to] = [];
+        let targetArr : number[] = this.adj.get(from);
+        let sourceArr : number[] = this.reverse_adj.get(to);
+
+        if(!targetArr) targetArr = [];
+        if(!sourceArr) sourceArr = [];
 
         // Check for uniqueness
-        if(this.adj[from].includes(to)) return;
+        if(targetArr.includes(to)) return;
 
         // Add the elements
-        this.adj[from].push(to);
-        this.reverse_adj[to].push(from);
+        targetArr.push(to);
+        sourceArr.push(from);
+        this.adj.set(from, targetArr);
+        this.reverse_adj.set(to, sourceArr);
         this.E++;
     }
 

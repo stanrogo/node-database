@@ -2,8 +2,8 @@ import readLines from '../FileReader';
 
 class Graph{
     E : number = 0; // The number of edges
-    adj : number[][][] = [];
-    reverse_adj : number[][][] = [];
+    adj : Array<Map<number, number[]>>;
+    reverse_adj : Array<Map<number, number[]>>;
     edgeCounts : Uint32Array;
 
     constructor(n : number = 1){
@@ -12,12 +12,12 @@ class Graph{
 
     /**
      * Initialise sizes of all datastructures used
-     * @param n The number of labels in the graph
+     * @param numLabels The number of labels in the graph
      */
-    setDataStructureSizes(n : number){
-        this.adj = [...Array(n)].map(x => []);
-        this.reverse_adj = [...Array(n)].map(x => []);
-        this.edgeCounts = new Uint32Array(n);
+    setDataStructureSizes(numLabels : number){
+        this.adj = [...Array(numLabels)].map(x => new Map());
+        this.reverse_adj = [...Array(numLabels)].map(x => new Map());
+        this.edgeCounts = new Uint32Array(numLabels);
     }
 
     /**
@@ -27,13 +27,19 @@ class Graph{
      * @param edgeLabel 
      */
     addEdge(from: number, to: number, edgeLabel: number) : void {
-        if(!this.adj[edgeLabel][from]) this.adj[edgeLabel][from] = [];
-        if(!this.reverse_adj[edgeLabel][to]) this.reverse_adj[edgeLabel][to] = [];
 
-        if(this.adj[edgeLabel][from].includes(to)) return;
+        let targetArr : number[] = this.adj[edgeLabel].get(from);
+        let sourceArr : number[] = this.reverse_adj[edgeLabel].get(to);
 
-        this.adj[edgeLabel][from].push(to);
-        this.reverse_adj[edgeLabel][to].push(from);
+        if(!targetArr) targetArr = [];
+        if(!sourceArr) sourceArr = [];
+
+        if(targetArr.includes(to)) return;
+
+        targetArr.push(to);
+        sourceArr.push(from);
+        this.adj[edgeLabel].set(from, targetArr);
+        this.reverse_adj[edgeLabel].set(to, sourceArr);
         this.E++;
         this.edgeCounts[edgeLabel]++;
     }
@@ -51,7 +57,7 @@ class Graph{
      * @param line The header line to read in
      */
     processHeader(line : string) : void {
-        const headerPattern : RegExp = /((\d+),(\d+),(\d+))/; 
+        const headerPattern : RegExp = /(\d+),(\d+),(\d+)/; 
         const match : RegExpExecArray = headerPattern.exec(line);
 
         if(!match){

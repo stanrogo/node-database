@@ -30,7 +30,6 @@ class Bench {
      */
     benchmark() : void {
         // Setup a new graph instance
-        console.log(process.memoryUsage());
         console.log('\n(1) Reading the graph into memory and preparing the estimator...');
         this.g = new Graph();
 

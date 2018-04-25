@@ -19,9 +19,9 @@ class Evaluator{
 
     computeStats(g : SingleGraph) : CardStat {
         return {
-            noIn : g.adj.filter(x => x).length,
+            noIn : g.adj.size,
             noPaths : g.E, // No duplicates, so distinct amount of edges
-            noOut : g.reverse_adj.filter(x => x).length,
+            noOut : g.reverse_adj.size,
         };
     }
 
@@ -41,14 +41,11 @@ class Evaluator{
      */
     join(left : SingleGraph, right : SingleGraph) : SingleGraph {
         const outGraph : SingleGraph = new SingleGraph();
-
-        left.adj.forEach((leftSource, leftSourceIndex) => {
-            if (!leftSource) return
-
-            leftSource.forEach((leftTarget) => {
-                if (!right.adj[leftTarget]) return;
-                right.adj[leftTarget].forEach((rightTarget) => {
-                    outGraph.addEdge(leftSourceIndex, rightTarget, 0);
+        left.adj.forEach((leftTargets, leftSource) => {
+            leftTargets.forEach((leftTarget) => {
+                const rightTargets = right.adj.get(leftTarget) || [];
+                rightTargets.forEach((rightTarget) => {
+                    outGraph.addEdge(leftSource, rightTarget);
                 });
             });
         });

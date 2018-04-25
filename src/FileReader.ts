@@ -10,6 +10,8 @@ import { openSync, readSync } from 'fs';
 // Acquire the OS default line separator
 const endOfLine = require('os').EOL;
 
+// TODO: The very last line is not being read!
+
 /**
  * Read a file continuously into a set buffer frame size
  * @param fileName The name of the file to read from
@@ -26,10 +28,7 @@ const readLines = (fileName: string, processLine : Function, processHeader ?: Fu
 
     while ((read = readSync(fd, buffer, 0, bufferSize, null)) !== 0) {
         leftOver += buffer.toString('utf8', 0, read + 1);
-        idxStart = 0
-
-        idx ;
-        idx2 
+        idxStart = 0;
 
         while (((idx = leftOver.indexOf(endOfLine, idxStart)) !== -1) || ((idx2 = leftOver.indexOf('\n', idxStart)) !== -1)) {
             idx = idx !== -1 ? idx : idx2;
