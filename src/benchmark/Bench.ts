@@ -76,16 +76,18 @@ class Bench {
      */
     runQuery(rpq : RPQTree) {
          // Benchmark estimation results and time
+         let estimate : CardStat;
          this.measurePerf('estimate', () => {
-            const estimate : CardStat = this.est.estimate(rpq);
-            this.printResults('Estimation', estimate);
+            estimate = this.est.estimate(rpq);
          });
-
+         this.printResults('Estimation', estimate);
+        
          // Benchmark evaluation results and time
+         let actual : CardStat;
          this.measurePerf('evaluate', () => {
-            const actual : CardStat = this.ev.evaluate(rpq);
-            this.printResults('Actual', actual);
+            actual = this.ev.evaluate(rpq);
          });
+         this.printResults('Actual', actual);
      }
 
      /**
