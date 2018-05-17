@@ -14,13 +14,13 @@ import Estimator from '../estimation/Estimator';
 import readLines from '../FileReader';
 
 class Bench {
-    graphFile : string;
-    queriesFile : string;
+    graphFile : File;
+    queriesFile : File;
     g : Graph;
     est : Estimator;
     ev : Evaluator;
 
-    constructor(graphFile : string, queriesFile : string) {
+    constructor(graphFile : File, queriesFile : File) {
         this.graphFile = graphFile;
         this.queriesFile = queriesFile;
     }
@@ -34,14 +34,19 @@ class Bench {
         this.g = new Graph();
 
         // Read file into memory and measure time taken
-        this.measurePerf('read the graph into memory', () => {
-            this.g.readFromContiguousFile(this.graphFile);
-        });
+        this.measurePerfAsync('read the graph into memory', () => {
+            return new Promise((resolve) => {
+                this.g.readFromContiguousFile(this.graphFile).then(() => {
+                    resolve();
+                });
+            });
+        }).then(() => {
 
-        // Perform follow up tasks
-        this.prepareComponents();
-        this.runQueries();
-        console.log(process.memoryUsage());
+            // Perform follow up tasks
+            this.prepareComponents();
+            this.runQueries();
+            console.log(process.memoryUsage());
+        });
     }
 
     /**
@@ -63,10 +68,11 @@ class Bench {
      */
     runQueries() : void {
         console.log('\n(2) Running the query workload...');
-        const queries : Query[] = this.parseQueries();
-        queries.forEach((query : Query) => {
-            const rpq : RPQTree = this.parseQueryToAST(query);
-            this.runQuery(rpq);
+        this.parseQueries().then((queries: Query[]) => {
+            queries.forEach((query : Query) => {
+                const rpq : RPQTree = this.parseQueryToAST(query);
+                this.runQuery(rpq);
+            });
         });
     }
 
@@ -81,7 +87,7 @@ class Bench {
             estimate = this.est.estimate(rpq);
          });
          this.printResults('Estimation', estimate);
-        
+
          // Benchmark evaluation results and time
          let actual : CardStat;
          this.measurePerf('evaluate', () => {
@@ -113,6 +119,13 @@ class Bench {
         );
     }
 
+    async measurePerfAsync(timeTo, callback) : Promise<any> {
+        const label = `Time to ${timeTo}`;
+        console.time(label);
+        await callback();
+        console.timeEnd(label);
+    }
+
     measurePerf(timeTo, callback) : void {
         const label = `Time to ${timeTo}`;
         console.time(label);
@@ -120,11 +133,12 @@ class Bench {
         console.timeEnd(label);
     }
 
-    parseQueries() : Query[] {
+    async parseQueries() : Promise<Query[]> {
         const queries : Query[] = [];
         const edgePattern : RegExp = /(.+),(.+),(.+)/;
 
-        readLines(this.queriesFile, (line) => {
+        await readLines(this.queriesFile, (line) => {
+            console.log(line);
             const match : RegExpExecArray = edgePattern.exec(line);
             if(match){
                 const s : string = match[1];

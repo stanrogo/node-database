@@ -6,9 +6,22 @@
  */
 
 import Bench from './benchmark/Bench';
+import { retrieveFile } from './FileReader';
+import './Console.ts';
 
-const graphFile : string = './input/graph_larger.nt';
-const queriesFile : string = './input/queries_larger.csv';
 
-const benchmark : Bench = new Bench(graphFile, queriesFile);
-benchmark.benchmark();
+async function runDefault(){
+    const graphPath : string = './input/synthetic_graph.nt';
+    const queriesPath : string = './input/synthetic_queries.csv';
+
+    const graphFile : File = await retrieveFile(graphPath);
+    const queriesFile : File = await retrieveFile(queriesPath);
+
+    const benchmark : Bench = new Bench(graphFile, queriesFile);
+    benchmark.benchmark();
+}
+
+// Export in the webpack style, in order to have access to global variables
+module.exports = {
+    runDefault
+};

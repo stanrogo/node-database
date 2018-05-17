@@ -5,47 +5,62 @@
  * @version 0.0.1
  */
 
-import { openSync, readSync } from 'fs';
-
-// Acquire the OS default line separator
-const endOfLine = require('os').EOL;
-
-// TODO: The very last line is not being read!
-
 /**
- * Read a file continuously into a set buffer frame size
- * @param fileName The name of the file to read from
+ * Read an entire file and then split into lines.
+ * TODO: make the file reading process more efficient by asynchronously reading in chunks
+ * @param file The file object containing the data we need
  * @param processLine Function to call when reading a line
  * @param processHeader Function to call when having a header
  */
-const readLines = (fileName: string, processLine : Function, processHeader ?: Function) : void => {
-    const fd = openSync(fileName, 'r');
-    const bufferSize = 1024;
-    const buffer = new Buffer(bufferSize);
-    let leftOver = '';
-    let read, line, idxStart, idx, idx2;
-    let header = true;
+const readLines = (file : File, processLine : Function, processHeader ?: Function) : Promise<null> => {
 
-    while ((read = readSync(fd, buffer, 0, bufferSize, null)) !== 0) {
-        leftOver += buffer.toString('utf8', 0, read + 1);
-        idxStart = 0;
+    return new Promise((resolve) => {
 
-        while (((idx = leftOver.indexOf(endOfLine, idxStart)) !== -1) || ((idx2 = leftOver.indexOf('\n', idxStart)) !== -1)) {
-            idx = idx !== -1 ? idx : idx2;
-            line = leftOver.substring(idxStart, idx);
+        const reader : FileReader = new FileReader();
+        let header = true;
+        reader.onload = function(){
 
-            // We have a line, so now call the appropriate functions
-            if(header && processHeader){
-                processHeader(line);
-            } else {
-                processLine(line);
+            const lines : string[] = this.result.split('\n');
+            for(let line : number = 0; line < lines.length; line++){
+
+                // We have a line, so now call the appropriate functions
+                if(header && processHeader){
+
+                    processHeader(lines[line]);
+                } else {
+
+                    processLine(lines[line]);
+                }
+
+                header = false;
             }
 
-            header = false;
-            idxStart = idx + 1;
-        }
-        leftOver = leftOver.substring(idxStart);
-    }
-}
+            resolve();
+        };
+        reader.readAsText(file);
+    });
+};
 
-export default readLines;
+/**
+ * Retrieve a file from a URL as a File object
+ * @param {string} filePath
+ * @returns {Promise<File>}
+ */
+const retrieveFile = (filePath: string) : Promise<File> => {
+
+    return new Promise((resolve, reject) => {
+        fetch(filePath).then((response) => {
+
+            return response.blob();
+        }).then((blob) => {
+
+            const file = new File([blob], filePath.replace('/','_').slice(1));
+            resolve(file);
+        }).catch((reason) => {
+
+            reject(reason);
+        });
+    });
+};
+
+export { retrieveFile, readLines as default };

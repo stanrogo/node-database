@@ -22,9 +22,9 @@ class Graph{
 
     /**
      * Add an edge to the graph, stored under its label and then src and target
-     * @param from 
-     * @param to 
-     * @param edgeLabel 
+     * @param from
+     * @param to
+     * @param edgeLabel
      */
     addEdge(from: number, to: number, edgeLabel: number) : void {
 
@@ -59,10 +59,10 @@ class Graph{
 
     /**
      * Wrapper function to read lines from the graph
-     * @param fileName The name of the file to read
+     * @param file The file object to read
      */
-    readFromContiguousFile(fileName: string) : void {
-        readLines(fileName, this.processLine.bind(this), this.processHeader.bind(this));
+    async readFromContiguousFile(file: File) : Promise<any> {
+        await readLines(file, this.processLine.bind(this), this.processHeader.bind(this));
     }
 
     /**
@@ -70,7 +70,7 @@ class Graph{
      * @param line The header line to read in
      */
     processHeader(line : string) : void {
-        const headerPattern : RegExp = /(\d+),(\d+),(\d+)/; 
+        const headerPattern : RegExp = /(\d+),(\d+),(\d+)/;
         const match : RegExpExecArray = headerPattern.exec(line);
 
         if(!match){
