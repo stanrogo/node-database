@@ -4,6 +4,7 @@
  * @author Stanley Clark<me@stanrogo.com>
  * @version 0.0.1
  */
+import Query from "./interfaces/Query";
 
 class RPQTree{
     data: string;
@@ -14,6 +15,18 @@ class RPQTree{
         this.data = data;
         this.left = left;
         this.right = right;
+    }
+
+    /**
+     * Take a query and convert it into an RPQ Tree representation
+     * @param {Query} query The query to convert
+     * @returns {RPQTree}
+     */
+    public static queryToTree(query : Query) : RPQTree {
+        console.log(`\nProcessing query: ${query.s},${query.path},${query.t}`);
+        const rpq : RPQTree = RPQTree.strToTree(query.path);
+        console.log(`\nParsed query tree: ${rpq.toString()}`);
+        return rpq;
     }
 
     /**

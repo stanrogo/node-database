@@ -1,4 +1,17 @@
-import readLines from '../FileReader';
+/**
+ * @file Graph.ts
+ * @description The in-memory representation of a graph
+ * @author Stanley Clark<me@stanrogo.com>
+ * @version 0.0.2
+ *
+ * One of the three most important files in this entire application.
+ * This contains a memory efficient representation of a graph
+ * using adjacency matrices and typed arrays for space efficient storage.
+ *
+ * More work is to come soon, especially that on K2 Trees.
+ */
+
+import FileUtility from '../FileUtility';
 
 class Graph{
     E : number = 0; // The number of edges
@@ -11,7 +24,7 @@ class Graph{
     }
 
     /**
-     * Initialise sizes of all datastructures used
+     * Initialise sizes of all data structures used
      * @param numLabels The number of labels in the graph
      */
     setDataStructureSizes(numLabels : number){
@@ -62,7 +75,7 @@ class Graph{
      * @param file The file object to read
      */
     async readFromContiguousFile(file: File) : Promise<any> {
-        await readLines(file, this.processLine.bind(this), this.processHeader.bind(this));
+        return await FileUtility.readLines(file, this.processLine.bind(this), this.processHeader.bind(this));
     }
 
     /**

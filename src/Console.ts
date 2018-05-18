@@ -1,18 +1,21 @@
-const baseLogFunction : Function = console.log;
+/**
+ * @file Console.ts
+ * @description Override console output to the DOM text output area
+ * @author Stanley Clark <me@stanrogo.com>
+ * @version 0.0.1
+ */
+
+const textarea : Element = document.querySelector("textarea");
 
 console.log = function() : void {
-
-    baseLogFunction.apply(console, arguments);
-
-    const args = Array.prototype.slice.call(arguments);
+    const args : Array<any> = Array.prototype.slice.call(arguments);
     for(let i : number = 0; i < args.length; i++){
-        const textarea = document.querySelector("textarea");
-        textarea.innerHTML += `\n${args[i]}`;
+        textarea.innerHTML += `${args[i]} `;
     }
-
+    textarea.innerHTML += '\n';
 };
 
-window.onerror = function(message, url, linenumber) {
+window.onerror = function(message, url, lineNumber) {
     console.log("JavaScript error: " + message + " on line " +
-        linenumber + " for " + url);
+        lineNumber + " for " + url);
 };

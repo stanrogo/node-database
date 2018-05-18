@@ -2,7 +2,7 @@
  * @file Bench.ts
  * @description Class to benchmark query estimation and evaluation time
  * @author Stanley Clark<me@stanrogo.com>
- * @version 0.0.1
+ * @version 0.1.0
  */
 
 import Graph from '../graph/Graph';
@@ -11,100 +11,127 @@ import CardStat from '../interfaces/CardStat';
 import Query from '../interfaces/Query';
 import Evaluator from '../evaluation/Evaluator';
 import Estimator from '../estimation/Estimator';
-import readLines from '../FileReader';
+import FileUtility from '../FileUtility';
+import Performance from "../Performance";
 
 class Bench {
-    graphFile : File;
-    queriesFile : File;
-    g : Graph;
-    est : Estimator;
-    ev : Evaluator;
+    g : Graph = null;
+    est : Estimator = null;
+    ev : Evaluator = null;
+    queries: Query[] = [];
 
-    constructor(graphFile : File, queriesFile : File) {
-        this.graphFile = graphFile;
-        this.queriesFile = queriesFile;
+    /**
+     * Load a single graph file into memory
+     * @param {File} graphFile The graph file to load
+     */
+    public async loadGraph(graphFile : File) : Promise<any> {
+        console.log('\n- Reading the graph into memory and preparing the estimator...');
+        this.g = new Graph();
+        await Performance.measurePerfAsync(
+            'read the graph into memory',
+            () => this.g.readFromContiguousFile(graphFile)
+        );
     }
 
     /**
-     * Main method to start benchmarking process
+     * Load multiple queries, from file
+     * @param {File} queryFile
      */
-    benchmark() : void {
-        // Setup a new graph instance
-        console.log('\n(1) Reading the graph into memory and preparing the estimator...');
-        this.g = new Graph();
-
-        // Read file into memory and measure time taken
-        this.measurePerfAsync('read the graph into memory', () => {
-            return new Promise((resolve) => {
-                this.g.readFromContiguousFile(this.graphFile).then(() => {
-                    resolve();
-                });
-            });
-        }).then(() => {
-
-            // Perform follow up tasks
-            this.prepareComponents();
-            this.runQueries();
-            console.log(process.memoryUsage());
+    public async loadQueries(queryFile : File) : Promise<any> {
+        console.log('\n- Loading queries from file...');
+        this.queries = [];
+        await FileUtility.readLines(queryFile, (line) => {
+            this.queries.push(Bench.queryFromString(line));
         });
+    }
+
+    /**
+     * Load a single query into memory, in query form
+     * @param {string} query
+     */
+    public loadQuery(query : string) : void {
+        console.log('\n- Loading query:', query);
+        this.queries = [Bench.queryFromString(query)];
     }
 
     /**
      * Measure preparation time for estimator and evaluator
      */
-    prepareComponents() : void {
+    public prepareComponents() : void {
+        if(this.g === null) throw new Error('Graph not initialised!');
+
+        console.log('\n- Preparing estimator and evaluation engine...');
         this.est = new Estimator(this.g);
         this.ev = new Evaluator(this.g, new Estimator(this.g));
 
         // Benchmark estimator preparation time
-        this.measurePerf('prepare the estimator', this.est.prepare.bind(this));
+        Performance.measurePerf(
+            'prepare the estimator',
+            this.est.prepare.bind(this)
+        );
 
         // Benchmark evaluator preparation time (including estimator prep)
-        this.measurePerf('prepare the evaluator', this.ev.prepare.bind(this));
+        Performance.measurePerf(
+            'prepare the evaluator',
+            this.ev.prepare.bind(this)
+        );
     }
 
     /**
      * Parse queries and run them one by one
      */
-    runQueries() : void {
-        console.log('\n(2) Running the query workload...');
-        this.parseQueries().then((queries: Query[]) => {
-            queries.forEach((query : Query) => {
-                const rpq : RPQTree = this.parseQueryToAST(query);
-                this.runQuery(rpq);
-            });
+    public runQueries() : void {
+        console.log('\n- Running the query workload...');
+        if(this.queries.length === 0){
+            throw new Error('No queries found!');
+        }
+
+        this.queries.forEach((query : Query) => {
+            this.runQuery(query);
         });
     }
 
     /**
      * Benchmark the running of a single RPQ
-     * @param rpq The regular path query to execute
+     * @param {Query} query The query string to parse
      */
-    runQuery(rpq : RPQTree) {
-         // Benchmark estimation results and time
-         let estimate : CardStat;
-         this.measurePerf('estimate', () => {
-            estimate = this.est.estimate(rpq);
-         });
-         this.printResults('Estimation', estimate);
+    private runQuery(query : Query) {
+        const rpq : RPQTree = RPQTree.queryToTree(query);
 
-         // Benchmark evaluation results and time
-         let actual : CardStat;
-         this.measurePerf('evaluate', () => {
-            actual = this.ev.evaluate(rpq);
-         });
-         this.printResults('Actual', actual);
-     }
+        // Benchmark estimation results and time
+        let estimate : CardStat;
+        Performance.measurePerf(
+            'estimate',
+            () => {estimate = this.est.estimate(rpq);}
+        );
+        Bench.printResults('Estimation', estimate);
 
-     /**
-      * Take a query and convert it into an RPQ Tree representation
-      * @param query The query to convert
-      */
-    parseQueryToAST(query: Query) : RPQTree {
-        console.log(`\nProcessing query: ${query.s},${query.path},${query.t}`);
-        const queryTree : RPQTree = RPQTree.strToTree(query.path);
-        console.log(`\nParsed query tree: ${queryTree.toString()}`);
-        return queryTree;
+        // Benchmark evaluation results and time
+        let actual : CardStat;
+        Performance.measurePerf(
+            'evaluate',
+            () => {actual = this.ev.evaluate(rpq);}
+        );
+        Bench.printResults('Actual', actual);
+    }
+
+    /**
+     * Take a query string and convert it to the Query format
+     * @param {string} query
+     * @returns {Query}
+     */
+    private static queryFromString(query : string) : Query {
+        const edgePattern : RegExp = /(.+),(.+),(.+)/;
+        const matches : RegExpExecArray = edgePattern.exec(query);
+
+        if(matches.length === 0){
+            throw new Error(`Invalid Query ${query}!`);
+        }
+
+        const s: string = matches[1];
+        const path: string = matches[2];
+        const t: string = matches[3];
+        return  {s, path, t};
     }
 
     /**
@@ -112,48 +139,11 @@ class Bench {
      * @param type The type of result obtained e.g. estimate or actual
      * @param results The results object with statistics to print
      */
-    printResults (type: string, results: CardStat) : void {
+    private static printResults (type: string, results: CardStat) : void {
         console.log(
             `\n${type} (noOut, noPaths, noIn) :`,
             `(${results.noOut}, ${results.noPaths}, ${results.noIn})`
         );
-    }
-
-    async measurePerfAsync(timeTo, callback) : Promise<any> {
-        const label = `Time to ${timeTo}`;
-        console.time(label);
-        await callback();
-        console.timeEnd(label);
-    }
-
-    measurePerf(timeTo, callback) : void {
-        const label = `Time to ${timeTo}`;
-        console.time(label);
-        callback();
-        console.timeEnd(label);
-    }
-
-    async parseQueries() : Promise<Query[]> {
-        const queries : Query[] = [];
-        const edgePattern : RegExp = /(.+),(.+),(.+)/;
-
-        await readLines(this.queriesFile, (line) => {
-            console.log(line);
-            const match : RegExpExecArray = edgePattern.exec(line);
-            if(match){
-                const s : string = match[1];
-                const path : string = match[2];
-                const t : string = match[3];
-
-                queries.push({ s, path, t });
-            }
-        });
-
-        if(queries.length === 0){
-            console.log('Did not parse any queries... Check query file.');
-        }
-
-        return queries;
     }
 }
 
