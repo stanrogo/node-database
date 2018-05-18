@@ -1,27 +1,20 @@
 {
-  "name": "@risingstack/rest-api-typescript",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "graph-js",
+  "version": "0.0.2",
+  "description": "A graph database in the web browser",
+  "main": "dist/Main.js",
   "scripts": {
     "start": "webpack-dev-server --open"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "express": "4.15.3",
-    "nodemon": "1.11.0"
-  },
   "devDependencies": {
-    "@types/mocha": "2.2.41",
     "@types/node": "^7.0.22",
     "eslint": "4.0.0",
     "eslint-config-airbnb-base": "11.2.0",
     "eslint-plugin-import": "2.3.0",
     "eslint-plugin-promise": "3.5.0",
-    "mocha": "3.4.2",
-    "supertest": "3.0.0",
     "ts-loader": "^4.3.0",
     "tsc": "1.20150623.0",
     "typescript": "^2.8.3",

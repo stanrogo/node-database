@@ -19,15 +19,13 @@ class FileUtility{
         return new Promise((resolve, reject) => {
             let header : boolean = true;
             const reader : LineReader = new LineReader(file);
-
-            reader.readLines((line, next) => {
+            reader.readLines((line) => {
                 if(header && processHeader){
                     processHeader(line);
                 } else {
                     processLine(line);
                 }
                 header = false;
-                next();
             }).then(() => {
                 resolve();
             }).catch((err) => {
