@@ -5,7 +5,7 @@
  * @version 0.1.0
  */
 
-import LineReader from './LineReader';
+import LineReader from 'browser-line-reader';
 
 class FileUtility{
     /**
