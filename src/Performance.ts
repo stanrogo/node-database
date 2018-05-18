@@ -8,6 +8,12 @@
  */
 
 class Performance{
+    /**
+     * Measure performance for an async action
+     * @param {string} timeTo Description of action
+     * @param {Function} callback The async function to execute
+     * @returns {Promise}
+     */
     public static async measurePerfAsync(timeTo : string, callback : Function) : Promise<any> {
         const label = `Time to ${timeTo}`;
         performance.mark('start');
@@ -15,6 +21,11 @@ class Performance{
         Performance.recordPerformance(label);
     }
 
+    /**
+     * Measure performance for a synchronous action
+     * @param {string} timeTo
+     * @param {Function} callback
+     */
     public static measurePerf(timeTo : string, callback : Function) : void {
         const label = `Time to ${timeTo}`;
         performance.mark('start');
@@ -22,6 +33,10 @@ class Performance{
         Performance.recordPerformance(label);
     }
 
+    /**
+     * Log how long a particular action took
+     * @param {string} label The name of the action
+     */
     private static recordPerformance(label : string) : void {
         performance.mark('end');
         performance.measure(label, 'start', 'end');

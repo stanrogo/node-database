@@ -5,14 +5,15 @@
  * @version 0.0.1
  */
 
-const textarea : Element = document.querySelector("textarea");
+const textArea : Element = document.querySelector("textarea");
 
 console.log = function() : void {
+    textArea.innerHTML += '- ';
     const args : Array<any> = Array.prototype.slice.call(arguments);
     for(let i : number = 0; i < args.length; i++){
-        textarea.innerHTML += `${args[i]} `;
+        textArea.innerHTML += `${args[i]} `;
     }
-    textarea.innerHTML += '\n';
+    textArea.innerHTML += '\n';
 };
 
 window.onerror = function(message, url, lineNumber) {

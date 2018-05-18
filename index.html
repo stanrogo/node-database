@@ -24,15 +24,17 @@
 	To begin, select a graph database file, or click the other button to use the default.
 </p>
 
-<input type="file">
+<input type="file" onchange="main.uploadCustom(event)">
 <button onclick="main.uploadDefault()">Use default</button>
 <textarea readonly>
-Waiting for input...
+- Waiting for input...
 </textarea>
 <hr/>
-<div>
-	<label>Run a query:</label><input type="text"><button type="submit">Go</button>
-</div>
+<form onsubmit="main.runQuery(event)">
+	<label>Run a query:</label>
+	<input type="text">
+	<button type="submit">Go</button>
+</form>
 <script src="./bundle.js"></script>
 </body>
 </html>

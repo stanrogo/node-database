@@ -15,10 +15,10 @@ import FileUtility from '../FileUtility';
 import Performance from "../Performance";
 
 class Bench {
-    g : Graph = null;
-    est : Estimator = null;
-    ev : Evaluator = null;
-    queries: Query[] = [];
+    private g : Graph = null;
+    private est : Estimator = null;
+    private ev : Evaluator = null;
+    private queries: Query[] = [];
 
     /**
      * Load a single graph file into memory
@@ -41,17 +41,21 @@ class Bench {
         console.log('\n- Loading queries from file...');
         this.queries = [];
         await FileUtility.readLines(queryFile, (line) => {
-            this.queries.push(Bench.queryFromString(line));
+            const query : Query = Bench.queryFromString(line);
+            if(query === null) return;
+            this.queries.push(query);
         });
     }
 
     /**
      * Load a single query into memory, in query form
-     * @param {string} query
+     * @param {string} queryString
      */
-    public loadQuery(query : string) : void {
-        console.log('\n- Loading query:', query);
-        this.queries = [Bench.queryFromString(query)];
+    public loadQuery(queryString : string) : void {
+        console.log('\n- Loading query:', queryString);
+        const query : Query = Bench.queryFromString(queryString);
+        if(query === null) return;
+        this.queries = [query];
     }
 
     /**
@@ -125,7 +129,8 @@ class Bench {
         const matches : RegExpExecArray = edgePattern.exec(query);
 
         if(matches.length === 0){
-            throw new Error(`Invalid Query ${query}!`);
+            console.log(`Invalid Query ${query}!`);
+            return null;
         }
 
         const s: string = matches[1];
