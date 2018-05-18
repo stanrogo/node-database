@@ -10,20 +10,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^7.0.22",
-    "eslint": "4.0.0",
-    "eslint-config-airbnb-base": "11.2.0",
-    "eslint-plugin-import": "2.3.0",
-    "eslint-plugin-promise": "3.5.0",
+    "@types/node": "^10.1.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-promise": "^3.7.0",
     "ts-loader": "^4.3.0",
-    "tsc": "1.20150623.0",
+    "tsc": "^1.20150623.0",
     "typescript": "^2.8.3",
-    "typescript-eslint-parser": "3.0.0",
+    "typescript-eslint-parser": "^15.0.0",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3",
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
-    "browser-line-reader": "0.0.3"
+    "browser-line-reader": "^0.0.3"
   }
 }
