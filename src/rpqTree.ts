@@ -1,17 +1,15 @@
 /**
- * @file RPQTree.ts
  * @description Representation of a query as an AST
- * @author Stanley Clark<me@stanrogo.com>
- * @version 0.0.1
  */
+
 import Query from "./interfaces/Query";
 
-class RPQTree{
+class RpqTree{
     data: string;
-    left: RPQTree;
-    right: RPQTree;
+    left: RpqTree;
+    right: RpqTree;
 
-    constructor(data: string, left: RPQTree, right: RPQTree){
+    constructor(data: string, left: RpqTree, right: RpqTree){
         this.data = data;
         this.left = left;
         this.right = right;
@@ -19,13 +17,12 @@ class RPQTree{
 
     /**
      * Take a query and convert it into an RPQ Tree representation
-     * @param {Query} query The query to convert
-     * @returns {RPQTree}
+     * @param query The query to convert
      */
-    public static queryToTree(query : Query) : RPQTree {
-        console.log(`\nProcessing query: ${query.s},${query.path},${query.t}`);
-        const rpq : RPQTree = RPQTree.strToTree(query.path);
-        console.log(`\nParsed query tree: ${rpq.toString()}`);
+    public static queryToTree(query : Query) : RpqTree {
+        console.log(`Processing query: ${query.s},${query.path},${query.t}`);
+        const rpq : RpqTree = RpqTree.strToTree(query.path);
+        console.log(`Parsed query tree: ${rpq.toString()}`);
         return rpq;
     }
 
@@ -33,7 +30,7 @@ class RPQTree{
      * Take a path, and convert this into an RPQ Tree representation
      * @param str The chain join path to parse
      */
-    static strToTree(str : string) : RPQTree {
+    static strToTree(str : string) : RpqTree {
         const query : string = str.replace(" ", ""); // Remove spaces
         const charArr : string[] = [...query]; // Explode into characters
         let level : number = 0; // Inside parentheses check
@@ -42,7 +39,7 @@ class RPQTree{
         if (charArr[0] === '(' && charArr[charArr.length - 1] === ')') {
             // Pull out the inside of the () and run strToTree again
             const exp: string = query.substring(1, charArr.length - 1);
-            return RPQTree.strToTree(exp);
+            return RpqTree.strToTree(exp);
         }
     
         // Attempt to find the right most '/' not inside '()' and split on this
@@ -67,20 +64,20 @@ class RPQTree{
                 const left : string = query.substring(0, i);
                 const right : string = query.substring(i + 1);
                 const payload : string = c;
-                return new RPQTree(
+                return new RpqTree(
                     payload, 
-                    RPQTree.strToTree(left), 
-                    RPQTree.strToTree(right)
+                    RpqTree.strToTree(left),
+                    RpqTree.strToTree(right)
                 );
             }
         }
     
         // Otherwise, the current query should not have any joins
-        return new RPQTree(str, null, null);
+        return new RpqTree(str, null, null);
     }
 
     /**
-     * Print the contents of the RPQTree in a readable way
+     * Print the contents of the RpqTree in a readable way
      */
     toString() : string {
         let res = '';
@@ -126,4 +123,4 @@ class RPQTree{
     }
 }
 
-export default RPQTree;
+export default RpqTree;

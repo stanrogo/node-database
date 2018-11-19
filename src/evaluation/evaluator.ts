@@ -1,7 +1,7 @@
-import Estimator from '../estimation/Estimator';
-import Graph from '../graph/Graph';
-import SingleGraph from '../graph/SingleGraph';
-import RPQTree from '../RPQTree';
+import Estimator from '../estimation/estimator';
+import Graph from '../graph/graph';
+import SingleGraph from '../graph/singleGraph';
+import RpqTree from '../rpqTree';
 import CardStat from '../interfaces/CardStat';
 
 class Evaluator{
@@ -54,7 +54,7 @@ class Evaluator{
         return outGraph;
     }
 
-    evaluate_aux(q : RPQTree) : SingleGraph {
+    evaluate_aux(q : RpqTree) : SingleGraph {
 
         // evaluate according to the AST bottom-up
     
@@ -95,7 +95,7 @@ class Evaluator{
         return null;
     }
 
-    evaluate(query : RPQTree) : CardStat {
+    evaluate(query : RpqTree) : CardStat {
         const res : SingleGraph = this.evaluate_aux(query);
         return this.computeStats(res);
     }

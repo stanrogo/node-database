@@ -1,18 +1,15 @@
 /**
- * @file Bench.ts
- * @description Class to benchmark query estimation and evaluation time
- * @author Stanley Clark<me@stanrogo.com>
- * @version 0.1.0
+ * Class to benchmark query estimation and evaluation time
  */
 
-import Graph from '../graph/Graph';
-import RPQTree from '../RPQTree';
+import Graph from '../graph/graph';
+import RpqTree from '../rpqTree';
 import CardStat from '../interfaces/CardStat';
 import Query from '../interfaces/Query';
-import Evaluator from '../evaluation/Evaluator';
-import Estimator from '../estimation/Estimator';
-import FileUtility from '../FileUtility';
-import Performance from "../Performance";
+import Evaluator from '../evaluation/evaluator';
+import Estimator from '../estimation/estimator';
+import FileUtility from '../fileUtility';
+import Performance from "../performance";
 
 class Bench {
     private g : Graph = null;
@@ -22,12 +19,12 @@ class Bench {
 
     /**
      * Load a single graph file into memory
-     * @param {File} graphFile The graph file to load
+     * @param graphFile The graph file to load
      */
-    public async loadGraph(graphFile : File) : Promise<any> {
+    public async loadGraph(graphFile : string) : Promise<any> {
         console.log('\n- Reading the graph into memory and preparing the estimator...');
         this.g = new Graph();
-        await Performance.measurePerfAsync(
+        await Performance.measurePerformance(
             'read the graph into memory',
             () => this.g.readFromContiguousFile(graphFile)
         );
@@ -35,9 +32,9 @@ class Bench {
 
     /**
      * Load multiple queries, from file
-     * @param {File} queryFile
+     * @param queryFile
      */
-    public async loadQueries(queryFile : File) : Promise<any> {
+    public async loadQueries(queryFile : string) : Promise<void> {
         console.log('\n- Loading queries from file...');
         this.queries = [];
         await FileUtility.readLines(queryFile, (line) => {
@@ -61,7 +58,7 @@ class Bench {
     /**
      * Measure preparation time for estimator and evaluator
      */
-    public prepareComponents() : void {
+    public async prepareComponents() : Promise<void> {
         if(this.g === null) throw new Error('Graph not initialised!');
 
         console.log('\n- Preparing estimator and evaluation engine...');
@@ -69,13 +66,13 @@ class Bench {
         this.ev = new Evaluator(this.g, new Estimator(this.g));
 
         // Benchmark estimator preparation time
-        Performance.measurePerf(
+        await Performance.measurePerformance(
             'prepare the estimator',
             this.est.prepare.bind(this)
         );
 
         // Benchmark evaluator preparation time (including estimator prep)
-        Performance.measurePerf(
+        await Performance.measurePerformance(
             'prepare the evaluator',
             this.ev.prepare.bind(this)
         );
@@ -84,27 +81,28 @@ class Bench {
     /**
      * Parse queries and run them one by one
      */
-    public runQueries() : void {
+    public async runQueries() : Promise<void> {
         console.log('\n- Running the query workload...');
         if(this.queries.length === 0){
             throw new Error('No queries found!');
         }
 
-        this.queries.forEach((query : Query) => {
-            this.runQuery(query);
-        });
+        for (const query of this.queries) {
+            await this.runQuery(query);
+        }
     }
 
     /**
      * Benchmark the running of a single RPQ
      * @param {Query} query The query string to parse
      */
-    private runQuery(query : Query) {
-        const rpq : RPQTree = RPQTree.queryToTree(query);
+    private async runQuery(query : Query): Promise<void> {
+        console.log(`\n`);
+        const rpq : RpqTree = RpqTree.queryToTree(query);
 
         // Benchmark estimation results and time
         let estimate : CardStat;
-        Performance.measurePerf(
+        await Performance.measurePerformance(
             'estimate',
             () => {estimate = this.est.estimate(rpq);}
         );
@@ -112,7 +110,7 @@ class Bench {
 
         // Benchmark evaluation results and time
         let actual : CardStat;
-        Performance.measurePerf(
+        await Performance.measurePerformance(
             'evaluate',
             () => {actual = this.ev.evaluate(rpq);}
         );
@@ -146,7 +144,7 @@ class Bench {
      */
     private static printResults (type: string, results: CardStat) : void {
         console.log(
-            `\n${type} (noOut, noPaths, noIn) :`,
+            `${type} (noOut, noPaths, noIn) :`,
             `(${results.noOut}, ${results.noPaths}, ${results.noIn})`
         );
     }

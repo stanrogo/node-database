@@ -1,11 +1,11 @@
 /**
- * @file SingleGraph.ts
+ * @file singleGraph.ts
  * @description Simple representation of projections and joins
  * @author Stanley Clark<me@stanrogo.com>
  * @version 0.0.1
  */
 
-import Graph from './Graph';
+import Graph from './graph';
 
 class SingleGraph{
     E : number = 0;                         // Number of edges

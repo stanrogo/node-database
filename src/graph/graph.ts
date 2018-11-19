@@ -1,5 +1,5 @@
 /**
- * @file Graph.ts
+ * @file graph.ts
  * @description The in-memory representation of a graph
  * @author Stanley Clark<me@stanrogo.com>
  * @version 0.0.2
@@ -11,7 +11,7 @@
  * More work is to come soon, especially that on K2 Trees.
  */
 
-import FileUtility from '../FileUtility';
+import FileUtility from '../fileUtility';
 
 class Graph{
     E : number = 0; // The number of edges
@@ -72,9 +72,9 @@ class Graph{
 
     /**
      * Wrapper function to read lines from the graph
-     * @param file The file object to read
+     * @param file The file to read
      */
-    async readFromContiguousFile(file: File) : Promise<any> {
+    async readFromContiguousFile(file: string) : Promise<any> {
         return await FileUtility.readLines(file, this.processLine.bind(this), this.processHeader.bind(this));
     }
 
