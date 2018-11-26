@@ -11,7 +11,7 @@
  * More work is to come soon, especially that on K2 Trees.
  */
 
-import FileUtility from '../fileUtility';
+import FileUtility from '../utilities/fileUtility';
 
 class Graph{
     E : number = 0; // The number of edges

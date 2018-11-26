@@ -2,7 +2,7 @@
  * @description Representation of a query as an AST
  */
 
-import Query from "./interfaces/Query";
+import Query from "../interfaces/Query";
 
 class RpqTree{
     data: string;

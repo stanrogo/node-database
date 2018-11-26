@@ -6,7 +6,7 @@
  */
 
 import Graph from '../graph/graph';
-import RpqTree from '../rpqTree';
+import RpqTree from '../rpqTree/rpqTree';
 import CardStat from '../interfaces/CardStat';
 
 class Estimator{

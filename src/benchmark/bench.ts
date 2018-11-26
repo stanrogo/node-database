@@ -3,13 +3,13 @@
  */
 
 import Graph from '../graph/graph';
-import RpqTree from '../rpqTree';
+import RpqTree from '../rpqTree/rpqTree';
 import CardStat from '../interfaces/CardStat';
 import Query from '../interfaces/Query';
 import Evaluator from '../evaluation/evaluator';
 import Estimator from '../estimation/estimator';
-import FileUtility from '../fileUtility';
-import Performance from "../performance";
+import FileUtility from '../utilities/fileUtility';
+import Performance from "../utilities/performance";
 
 class Bench {
     private g : Graph = null;

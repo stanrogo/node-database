@@ -1,7 +1,7 @@
 import Estimator from '../estimation/estimator';
 import Graph from '../graph/graph';
 import SingleGraph from '../graph/singleGraph';
-import RpqTree from '../rpqTree';
+import RpqTree from '../rpqTree/rpqTree';
 import CardStat from '../interfaces/CardStat';
 
 class Evaluator{
