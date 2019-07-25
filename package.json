@@ -1,23 +1,21 @@
 {
   "name": "graph-js",
   "version": "0.0.2",
-  "description": "A graph database in the web browser",
+  "description": "A graph database in node js",
   "repository": "https://github.com/stanrogo/node-database",
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc --watch"
   },
   "keywords": [],
-  "author": "",
+  "author": "Stanley Clark <me@stanrogo.com>",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^10.1.1",
+    "@types/node": "^12.6.8",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "browser-line-reader": "0.0.7",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^11.3.2",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-promise": "^3.7.0",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0"
+    "eslint": "^6.1.0",
+    "typescript": "^3.5.3"
   }
 }
