@@ -6,3 +6,7 @@ input
 # IDEs
 .vscode
 .idea
+
+# Project Specific
+src/sparql/*
+!src/sparql/Sparql.g4

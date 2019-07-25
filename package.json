@@ -5,7 +5,9 @@
   "repository": "https://github.com/stanrogo/node-database",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc --watch"
+    "start": "tsc --watch",
+    "build": "tsc",
+    "antlr4ts": "antlr4ts -visitor src/sparql/Sparql.g4 -o src/sparql"
   },
   "keywords": [],
   "author": "Stanley Clark <me@stanrogo.com>",
@@ -14,8 +16,12 @@
     "@types/node": "^12.6.8",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
+    "antlr4ts-cli": "0.5.0-alpha.3",
     "browser-line-reader": "0.0.7",
     "eslint": "^6.1.0",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "antlr4ts": "0.5.0-alpha.3"
   }
 }
