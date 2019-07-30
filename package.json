@@ -5,7 +5,8 @@
   "repository": "https://github.com/stanrogo/node-database",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc --watch",
+    "start": "npm run antlr4ts && npm run dev",
+    "dev": "tsc --watch",
     "build": "tsc",
     "antlr4ts": "antlr4ts -visitor src/sparql/Sparql.g4 -o src/sparql"
   },

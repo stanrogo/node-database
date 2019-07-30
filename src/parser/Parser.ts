@@ -6,14 +6,15 @@ import {
 	SelectQueryContext,
 	WhereClauseContext,
 	VarContext,
-	TriplesBlockContext, IriRefContext
+	IriRefContext,
+	PrefixedNameContext,
+	TriplesSameSubjectContext
 } from '../sparql/SparqlParser';
 import { SparqlListener } from '../sparql/SparqlListener';
 import QueryGraph from '../QueryGraph';
-import QueryEdge from "../QueryEdge";
 
 // Create the lexer and parser
-let inputStream = CharStreams.fromString("SELECT ?x ?y WHERE { ?x owl:owns ?y }");
+let inputStream = CharStreams.fromString("SELECT ?x ?y WHERE { ?x owl:owns ?y . ?y <needs> ?z }");
 let lexer = new SparqlLexer(inputStream);
 let tokenStream = new CommonTokenStream(lexer);
 let parser = new SparqlParser(tokenStream);
@@ -58,12 +59,12 @@ class EnterFunctionListener implements SparqlListener {
 		this.clause = Clauses.WHERE;
 	}
 
-	public enterTriplesBlock(context: TriplesBlockContext): void {
+	public enterTriplesSameSubject(context: TriplesSameSubjectContext): void {
 		this.positionInTriple = TriplePos.SRC;
 		this.queryEdge = { src: '', predicate: '', trg: ''};
 	}
 
-	public exitTriplesBlock(context: TriplesBlockContext): void {
+	public exitTriplesSameSubject(context: TriplesSameSubjectContext): void {
 		const { src, predicate, trg } = this.queryEdge;
 		this.queryGraph.addEdge(src, predicate, trg);
 	}
@@ -84,10 +85,19 @@ class EnterFunctionListener implements SparqlListener {
 	}
 
 	public enterIriRef(context: IriRefContext): void {
-		context.getToken(0, 1);
 		if (this.clause === Clauses.WHERE) {
 			if (this.positionInTriple === TriplePos.PREDICATE) {
+				if (!context.IRI_REF()) return;
 				this.queryEdge.predicate = context.IRI_REF().text;
+				this.positionInTriple = TriplePos.TRG;
+			}
+		}
+	}
+
+	public enterPrefixedName(context: PrefixedNameContext): void {
+		if (this.clause === Clauses.WHERE) {
+			if (this.positionInTriple === TriplePos.PREDICATE) {
+				this.queryEdge.predicate = context.PNAME_LN().text;
 				this.positionInTriple = TriplePos.TRG;
 			}
 		}
@@ -96,4 +106,3 @@ class EnterFunctionListener implements SparqlListener {
 
 const listener: SparqlListener = new EnterFunctionListener();
 ParseTreeWalker.DEFAULT.walk(listener, tree);
-console.clear();
