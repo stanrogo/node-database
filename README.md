@@ -12,8 +12,8 @@ To start the build server simply run:
 ```
 git clone git@github.com:stanrogo/node-database.git
 cd node-database
-npm install
-npm start
+yarn install
+yarn start
 node dist/index.js
 ```
 
